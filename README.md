@@ -28,7 +28,7 @@ Select number of cores. For just file storage, 2 cores should be sufficient. If 
 
 Select Memory. I usually do 4096 for a normal install, and 8192 when wanting to use office/apps. Click "Next".
 
-Configure Nextwork. Static IP can be set to whatever you want. If you have no idea, close the window and click on the node, and then shell. Enter the following command:
+Configure Nextwork. Static IP can be set to whatever you want. If you have no idea, close the window and click on the , and then shell. Enter the following command:
 ```
 ip route | grep default
 ```
@@ -73,6 +73,55 @@ This will open the config file so we can edit it. Use arrow keys to navigate and
 
 Ctrl+X to exit, Y to save, and Enter to overwrite the old file. You should now be able to access your nextcloud server through your reverse proxy!
 
-And that's all we need to do to get the reverse proxy set up!
+Check that you can get to the NextCloud Login page by navigating to your web address. And that's all we need to do to get the reverse proxy set up!
 
-## Configuring Next
+## Configuring NextCloud to use the NAS
+
+For this, I am going to use WinSCP, so download it if you don't have it. Feel free to use anything, but make sure you can see hidden files. 
+
+Many thanks to [this guide](https://forum.proxmox.com/threads/tutorial-unprivileged-lxcs-mount-cifs-shares.101795/) for showing me how to get the mount bind readable, and [this guide](https://gist.github.com/ajmassi/e6862294d114467b46f9b7f073921352) for helping me with syntax.
+
+In your NextCloud container console, input the command:
+```
+mkdir /mnt/nextcloud-nas-data
+```
+This will make a point for us to bind to, and then point NextCloud to it to use it. Enter the command:
+```
+groupadd -g 10000 lxc_shares
+```
+then enter
+```
+cat /etc/passwd
+```
+This will list all of the users that have been installed that we need to give permissions to. The format is as follows:
+<username>:<x>:<userID>:<groupID>:<otherinfo>
+Enter the command:
+```
+usermod -aG lxc_shares USERNAME
+```
+Replace USERNAME with each user in the list, one line at a time. 
+
+Now go to the pve host console and create a mount point for the NAS share by entering the command: 
+```
+mkdir -p /mnt/lxc_shares/nas_rwx
+```
+
+
+
+Then enter the following command:
+```
+nano /var/www/nextcloud/config/config.php
+```
+This opens up the NextCloud Config file again. Look at 'datadirectory' and navigate to this file location in WinSCP. Copy the files in this directory to your desktop, or to /mnt/nextcloud-nas-data by your preference.
+![Image 6](https://github.com/KalSyl/NextCloud-Proxmox-Configuration/blob/main/Tutorial_Pictures/Step_6.png?raw=true)
+
+Now we want to nano back into the config file, and update the 'datadirectory' from '/var/www/nextcloud-data' to '/mnt/nextcloud-nas-data' or however you have named them.
+Ctrl+X, Y, Enter
+
+Check that you can still access the server by navitating to the web address/local IP address.
+
+
+
+
+
+
