@@ -4,4 +4,5 @@ Below are the steps that I followed to get a NextCloud LXC set up and running on
 
 ## Setup
 
-In Proxmox, click on your local stoarge in the left hand pane. Then click on CT Templates. 
+In Proxmox, click on your local stoarge in the left hand pane. Then click on CT Templates.
+![alt text](https://github.com/KalSyl/NextCloud-Proxmox-Configuration/blob/Tutorial-Pictures/Step1.png?raw=true)
